@@ -1,0 +1,35 @@
+[
+  {
+    "title": "Instalación"
+  },
+  {
+    "title": "Introducción"
+  },
+  {
+    "title": "La instancia Vue"
+  },
+  {
+    "title": "Sintaxis de Template"
+  },
+  {
+    "title": "Propiedades Computadas y Observadores"
+  },
+  {
+    "title": "Enlace Clases y Estilos"
+  },
+  {
+    "title": "Renderización Condicional"
+  },
+  {
+    "title": "Renderizado de lista"
+  },
+  {
+    "title": "Manejo de eventos"
+  },
+  {
+    "title": "Binding en Formularios"
+  },
+  {
+    "title": "Conceptos Básicos de Componentes"
+  }
+]
