@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Home.dart';
+import 'DaataSearch.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -9,16 +10,32 @@ void main() {
     darkTheme: ThemeData.dark(),
     debugShowCheckedModeBanner: false,
     title: 'Vue js',
-    home: Scaffold(
-      appBar: AppBar(
-        title: Text('VueJs Documentacion Esp Offline'),
-      ),
-      body: Home(),
-    ),
+    home: HomePage(),
   ));
 }
 
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
 
-
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('VueJs Documentacion Esp Offline'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () =>
+                  showSearch(context: context, delegate: DataSearch()))
+        ],
+      ),
+      body: Home(),
+    );
+  }
+}
 

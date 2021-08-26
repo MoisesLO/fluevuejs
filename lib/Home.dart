@@ -8,7 +8,7 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
-
+var _items;
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class _HomeState extends State<Home> {
       future: DefaultAssetBundle.of(context).loadString("assets/json/vue.json"),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          final _items = json.decode(snapshot.data);
+           _items = json.decode(snapshot.data);
           // print(_items.length);
           return ListView.builder(
             itemCount: _items.length,
@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
                           padding: const EdgeInsets.only(
                               left: 10, top: 5, bottom: 5, right: 10),
                           child: CircleAvatar(
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.teal,
                             radius: 22,
                             child: Text('${index + 1}'),
                           ),
