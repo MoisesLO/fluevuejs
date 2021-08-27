@@ -25,8 +25,9 @@ class _CardListState extends State<CardList> {
               width: 60,
               height: 60,
               child: CircleAvatar(
+                backgroundColor: Colors.green,
                 radius: 22,
-                child: Text('${widget.number}'),
+                child: Text('${widget.number}', style: (TextStyle(color: Colors.white)),),
               ),
             ),
             Flexible(child: Text('${widget.title}'))
