@@ -8,7 +8,7 @@
 <p>Última versión estable: 2.5.16</p>
 <p>Las notas de lanzamiento detalladas para cada versión están disponibles en GitHub.</p>
 
-<h2>Vue Devtools</h2>å
+<h2>Vue Devtools</h2>
 <p>Cuando use Vue, le recomendamos que también instale Vue Devtools en su navegador, lo que le permite inspeccionar y depurar sus aplicaciones de Vue de una manera más amigable.</p>
 
 <h2>Inclusión Directa con script</h2>
@@ -18,3 +18,24 @@
 <p><b>Versión de Producción</b> Sin mensajes de error, 30.90KB min+gzip</p>
 
 <h3>CDN</h3>
+<p>Es recomendable vincular a un número específico de versión que pueda actualizar manualmente:</p>
+<pre><code> <span >&lt;<span >script</span> <span >src</span>=<span >"https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"</span>&gt;</span><span >&lt;/<span >script</span>&gt;</span></code></pre>
+<p>Para producción, recomendamos vincular a un número de versión específico y compilar para evitar roturas inesperadas de versiones más nuevas:</p>
+<pre><code><span>&lt;<span>script</span> <span>src</span>=<span>"https://cdn.jsdelivr.net/npm/vue@2.6.14"</span>&gt;</span><span>&lt;/<span>script</span>&gt;</span></code></pre>
+<p>Si está utilizando módulos ES nativos, también hay una compilación compatible con módulos ES:</p>
+<pre><code><span>&lt;<span>script</span> <span>type</span>=<span>"module"</span>&gt;</span><span class="javascript">
+  <span>import</span> Vue <span>from</span> <span>'https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js'</span>
+</span><span>&lt;/<span>script</span>&gt;</span></code></pre>
+<p>Puede buscar el código fuente del paquete NPM en cdn.jsdelivr.net/npm/vue .</p>
+<p>Vue también está disponible en unpkg y cdnjs (cdnjs tarda algún tiempo en sincronizarse, por lo que es posible que la última versión aún no esté disponible).</p>
+<p>Asegúrese de leer sobre las diferentes versiones de Vue y use la versión de producción
+en su sitio publicado, reemplazando vue.jscon vue.min.js. Esta es una compilación más pequeña optimizada para la velocidad en lugar de la experiencia de desarrollo.</p>
+
+<h2>NPM</h2>
+<p>NPM es el método de instalación recomendado al crear aplicaciones a gran escala con Vue. Se combina muy bien con paquetes de módulos como Webpack o Browserify . Vue también proporciona herramientas complementarias para la creación de componentes de un solo archivo .</p>
+<pre><code><span># latest stable</span>
+$ npm install vue</code></pre>
+
+<h2>CLI</h2>
+<p>Vue proporciona una CLI oficial para implementar rápidamente aplicaciones ambiciosas de una sola página. Proporciona configuraciones de compilación con baterías para un flujo de trabajo frontend moderno. Solo se necesitan unos minutos para poner en funcionamiento las compilaciones listas para producción, recarga en caliente y almacenamiento de pelusa. Consulte los documentos de la CLI de Vue para obtener más detalles.</p>
+<p>La CLI asume un conocimiento previo de Node.js y las herramientas de compilación asociadas. Si es nuevo en Vue o en las herramientas de compilación de front-end, le recomendamos encarecidamente que lea la guía sin ninguna herramienta de compilación antes de usar la CLI.</p>
