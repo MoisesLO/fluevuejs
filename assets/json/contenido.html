@@ -1,183 +1,147 @@
-<h1>Introducción</h1>
-<h2>¿Qué es Vue.js?</h2>
-<p>Vue es un <b>marco progresivo</b> para construir interfaces de usuario. A diferencia de otros marcos monolíticos, Vue está diseñado desde cero para ser adoptable de forma incremental. La biblioteca principal se centra solo en la capa de vista y es fácil de recoger e integrar con otras bibliotecas o proyectos existentes. Por otro lado, Vue también es perfectamente capaz de impulsar aplicaciones sofisticadas de una sola página cuando se usa en combinación con <b>herramientas modernas y bibliotecas de soporte</b> .</p>
+<h1>La instancia Vue</h1>
+<h2>Creando una instancia de Vue</h2>
+<p>Cada aplicación de Vue se comienza creando una nueva <strong>Instancia de Vue</strong> con la
+    función <code>Vue</code>:</p>
+<pre><code><span>var</span> vm = <span>new</span> Vue({
+  <span>// options</span>
+})</code></pre>
 
-<h2>Empezando</h2>
-<p><b>Instalación</b></p>
-<blockquote>La guía oficial asume un conocimiento de nivel intermedio de HTML, CSS y JavaScript. Si es totalmente nuevo en el desarrollo de frontend, puede que no sea la mejor idea saltar directamente a un marco como primer paso: ¡aprenda los conceptos básicos y luego regrese! La experiencia previa con otros marcos ayuda, pero no es necesaria.</blockquote>
-<p>La forma más fácil de probar Vue.js es usando el <b>ejemplo de Hello World</b> . Siéntase libre de abrirlo en otra pestaña y seguirlo mientras revisamos algunos ejemplos básicos. O <b>puede crear un index.htmlarchivo</b> e incluir Vue con:</p>
-<pre><code><span>&lt;!-- development version, includes helpful console warnings --&gt;</span>
-<span>&lt;<span>script</span> <span>src</span>=<span>"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"</span>&gt;</span><span>&lt;/<span>script</span>&gt;</span></code></pre>
-<p>o:</p>
-<pre><code><span>&lt;!-- production version, optimized for size and speed --&gt;</span>
-<span>&lt;<span>script</span> <span>src</span>=<span>"https://cdn.jsdelivr.net/npm/vue@2"</span>&gt;</span><span>&lt;/<span>script</span>&gt;</span></code></pre>
-<p>La página de <b>instalación</b> proporciona más opciones para instalar Vue. Nota: Nosotros no recomendamos que los principiantes comienzan con <code>vue-cli</code>, especialmente si usted todavía no está familiarizado con las herramientas de construcción basadas en Node.js.</p>
-<p>En el núcleo de Vue.js hay un sistema que nos permite renderizar datos de forma declarativa al DOM utilizando una sintaxis de plantilla sencilla:</p>
+<p>Aunque no estrictamente asociado con el patrón MVVM, el diseño de Vue fue en parte inspirado por
+    él.<br>Como
+    una convención, solemos usar la variable <code>vm</code> (abreviación de ViewModel) para
+    hacer referencia a nuestra instancia de Vue.</p>
+<p>Cuando usted crea una instancia de Vue, le pasa un <strong>objeto options</strong>. La mayor
+    parte de esta guía describe cómo usted puede usar estas opciones para crear el
+    comportamiento deseado.<br>Como referencia, usted puede visitar también la lista completa de
+    opciones en la documentación de la API.</p>
+<p>Una aplicación Vue está conformada por una <strong>instancia Vue raíz</strong> creada con
+    <code>new Vue</code>, opcionalmente organizada dentro de un árbol de componentes reusables
+    anidados. Por ejemplo, el árbol de una aplicación TO-DO podría verse así:</p>
+<pre><code>Root Instance
+└─ TodoList
+   ├─ TodoItem
+   │  ├─ TodoButtonDelete
+   │  └─ TodoButtonEdit
+   └─ TodoListFooter
+      ├─ TodosButtonClear
+      └─ TodoListStatistics</code></pre>
 
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app"</span>&gt;</span><font></font>
-  {{ message }}<font></font>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br><br>
-<pre><code><span>var</span> app = <span>new</span> Vue({
+<p>Hablaremos sobre el sistema de componentes en detalle después.
+    Por ahora, solo es necesario saber que todos los componentes de Vue son también instancias
+    de Vue, por lo tanto aceptan el mismo objeto options (excepto para unas pocas específicas
+    opciones de raíz).</p>
+<h2>Datos y Métodos</h2>
+<p>Cuando una instancia Vue es creada, agrega todas las propiedades encontradas en su objeto
+    <code>data</code> al <strong>sistema de reactividad</strong> de Vue. Cuando los valores de
+    estas propiedades cambian, la vista “reaccionará”, actualizándose para coincidir con los
+    nuevos valores.</p>
+<pre><code><span>// Our data object</span>
+<span>var</span> data = { <span>a</span>: <span>1</span> }
+
+<span>// The object is added to a Vue instance</span>
+<span>var</span> vm = <span>new</span> Vue({
+  <span>data</span>: data
+})
+
+<span>// Getting the property on the instance</span>
+<span>// returns the one from the original data</span>
+vm.a == data.a <span>// =&gt; true</span>
+
+<span>// Setting the property on the instance</span>
+<span>// also affects the original data</span>
+vm.a = <span>2</span>
+data.a <span>// =&gt; 2</span>
+
+<span>// ... and vice-versa</span>
+data.a = <span>3</span>
+vm.a <span>// =&gt; 3</span></code></pre>
+
+<p>Cuando estos datos cambian, la vista volverá a renderizarse. Es preciso señalar que las
+    propiedades en <code>data</code> solo son <strong>reactivas</strong> si ya existían cuando
+    se creó la instancia. Eso significa que si usted agrega una nueva propiedad, como:</p>
+<pre><code>vm.b = <span>'hi'</span></code></pre>
+<p>Entonces los cambios de <code>b</code> no producirán ninguna actualización en la vista. Si
+    sabe que necesitará una propiedad más adelante, pero comienza vacía o inexistente,
+    necesitará setear un valor inicial. Por ejemplo:</p>
+<pre><code>data: {
+  <span>newTodoText</span>: <span>''</span>,
+  <span>visitCount</span>: <span>0</span>,
+  <span>hideCompletedTodos</span>: <span>false</span>,
+  <span>todos</span>: [],
+  <span>error</span>: <span>null</span>
+}</code></pre>
+<p>La unica excepción a esto es el uso de <code>Object.freeze()</code>, lo que evita que se
+    modifiquen las propiedades existentes, lo que también significa que el sistema de
+    reactividad no puede rastrear cambios.</p>
+<pre><code><span>var</span> obj = {
+  <span>foo</span>: <span>'bar'</span>
+}
+
+<span>Object</span>.freeze(obj)
+
+<span>new</span> Vue({
   <span>el</span>: <span>'#app'</span>,
-  <span>data</span>: {
-    <span>message</span>: <span>'Hello Vue!'</span><font></font>
-  }<font></font>
-})</code></pre>
-
-<p>¡Ya hemos creado nuestra primera aplicación Vue! Esto se parece bastante a renderizar una plantilla de cadena, pero Vue ha hecho mucho trabajo bajo el capó. Los datos y el DOM ahora están vinculados y ahora todo es <b>reactivo</b> . ¿Como sabemos? Abra la consola JavaScript de su navegador (ahora mismo, en esta página) y establezca <code>app.messageun</code> valor diferente. Debería ver el ejemplo renderizado anterior actualizado en consecuencia.</p>
-<p>Tenga en cuenta que ya no tenemos que interactuar con el HTML directamente. Una aplicación Vue se adjunta a un solo elemento DOM ( <code>#app</code> en nuestro caso) y luego lo controla por completo. El HTML es nuestro punto de entrada, pero todo lo demás sucede dentro de la instancia de Vue recién creada.</p>
-<p>Además de la interpolación de texto, también podemos vincular atributos de elementos como este:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-2"</span>&gt;</span>
-  <span>&lt;<span>span</span> <span>v-bind:title</span>=<span>"message"</span>&gt;</span><font></font>
-    Hover your mouse over me for a few seconds<font></font>
-    to see my dynamically bound title!<font></font>
-  <span>&lt;/<span>span</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code><span>var</span> app2 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-2'</span>,
-  <span>data</span>: {
-    <span>message</span>: <span>'You loaded this page on '</span> + <span>new</span> <span>Date</span>().toLocaleString()<font></font>
-  }<font></font>
-})</code></pre>
-
-<p>Aquí nos encontramos con algo nuevo. El <code>v-bin</code> datributo que está viendo se llama <b>directiva</b> . Las directivas tienen el prefijo <code>v-</code> para indicar que son atributos especiales proporcionados por Vue y, como puede haber adivinado, aplican un comportamiento reactivo especial al DOM renderizado. Aquí, básicamente está diciendo "mantenga el <b>title</b> atributo de este elemento actualizado con la <b>message</b> propiedad en la instancia de Vue".</p>
-<p>Si vuelve a abrir su consola JavaScript e ingresa <code>app2.message = 'some new message'</code>, verá una vez más que el HTML enlazado, en este caso el <b>title</b> atributo, se ha actualizado.</p>
-<p>También es fácil alternar la presencia de un elemento:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-3"</span>&gt;</span>
-  <span>&lt;<span>span</span> <span>v-if</span>=<span>"seen"</span>&gt;</span>Now you see me<span>&lt;/<span>span</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code><span>var</span> app3 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-3'</span>,
-  <span>data</span>: {
-    <span>seen</span>: <span class="hljs-literal">true</span><font></font>
-  }<font></font>
+  <span>data</span>: obj
 })</code></pre>
 <br>
-<p>Adelante, entra <code>app3.seen = false</code> en la consola. Debería ver desaparecer el mensaje.</p>
-<p>Este ejemplo demuestra que podemos vincular datos no solo a texto y atributos, sino también a la <b>estructura</b> del DOM. Además, Vue también proporciona un potente sistema de <b>efectos de transición</b> que puede aplicar automáticamente efectos de transición cuando Vue inserta / actualiza / elimina elementos.</p>
-<p>Hay bastantes otras directivas, cada una con su propia funcionalidad especial. Por ejemplo, la <code>v-for</code> directiva se puede utilizar para mostrar una lista de elementos utilizando los datos de una matriz:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-4"</span>&gt;</span>
-  <span>&lt;<span>ol</span>&gt;</span>
-    <span>&lt;<span>li</span> <span>v-for</span>=<span>"todo in todos"</span>&gt;</span><font></font>
-      {{ todo.text }}<font></font>
-    <span>&lt;/<span>li</span>&gt;</span>
-  <span>&lt;/<span>ol</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code><span>var</span> app4 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-4'</span>,
-  <span>data</span>: {
-    <span>todos</span>: [<font></font>
-      { <span>text</span>: <span>'Learn JavaScript'</span> },<font></font>
-      { <span>text</span>: <span>'Learn Vue'</span> },<font></font>
-      { <span>text</span>: <span>'Build something awesome'</span> }<font></font>
-    ]<font></font>
-  }<font></font>
-})</code></pre>
-<p>En la consola, ingrese <code>app4.todos.push({ text: 'New item' })</code>. Debería ver un nuevo elemento adjunto a la lista.</p>
-
-<h2>Manejo de la entrada del usuario</h2>
-<p>Para permitir que los usuarios interactúen con su aplicación, podemos usar la <code>v-on</code> directiva para adjuntar detectores de eventos que invocan métodos en nuestras instancias de Vue:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-5"</span>&gt;</span>
-  <span>&lt;<span>p</span>&gt;</span>{{ message }}<span>&lt;/<span>p</span>&gt;</span>
-  <span>&lt;<span>button</span> <span>v-on:click</span>=<span>"reverseMessage"</span>&gt;</span>Reverse Message<span>&lt;/<span>button</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code><span>var</span> app5 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-5'</span>,
-  <span>data</span>: {
-    <span>message</span>: <span>'Hello Vue.js!'</span><font></font>
-  },<font></font>
-  <span>methods</span>: {
-    <span>reverseMessage</span>: <span class="hljs-function"><span>function</span> (<span class="hljs-params"></span>) </span>{
-      <span>this</span>.message = <span>this</span>.message.split(<span>''</span>).reverse().join(<span>''</span>)<font></font>
-    }<font></font>
-  }<font></font>
-})</code></pre>
-<p>Tenga en cuenta que en este método actualizamos el estado de nuestra aplicación sin tocar el DOM: todas las manipulaciones del DOM son manejadas por Vue y el código que escribe se centra en la lógica subyacente.</p>
-<p>Vue también proporciona la v-modeldirectiva que hace que el enlace bidireccional entre la entrada del formulario y el estado de la aplicación sea muy sencillo:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-6"</span>&gt;</span>
-  <span>&lt;<span>p</span>&gt;</span>{{ message }}<span>&lt;/<span>p</span>&gt;</span>
-  <span>&lt;<span>input</span> <span>v-model</span>=<span>"message"</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code><span>var</span> app6 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-6'</span>,
-  <span>data</span>: {
-    <span>message</span>: <span>'Hello Vue!'</span><font></font>
-  }<font></font>
-})</code></pre>
-
-<h2>Componer con componentes</h2>
-<p>El sistema de componentes es otro concepto importante en Vue, porque es una abstracción que nos permite construir aplicaciones a gran escala compuestas por componentes pequeños, autónomos y, a menudo, reutilizables. Si lo pensamos bien, casi cualquier tipo de interfaz de aplicación se puede abstraer en un árbol de componentes:</p>
-<p>En Vue, un componente es esencialmente una instancia de Vue con opciones predefinidas. Registrar un componente en Vue es sencillo:</p>
-<pre><code><span>// Define a new component called todo-item</span>
-Vue.component(<span>'todo-item'</span>, {
-  <span>template</span>: <span>'&lt;li&gt;This is a todo&lt;/li&gt;'</span><font></font>
-})<font></font>
-<font></font>
-<span>var</span> app = <span>new</span> Vue(...)</code></pre>
-<p>Ahora puede componerlo en la plantilla de otro componente:</p>
-<p><pre><code><span>&lt;<span>ol</span>&gt;</span>
-  <span>&lt;!-- Create an instance of the todo-item component --&gt;</span>
-  <span>&lt;<span>todo-item</span>&gt;</span><span>&lt;/<span>todo-item</span>&gt;</span>
-<span>&lt;/<span>ol</span>&gt;</span></code></pre></p>
-<p>Pero esto generaría el mismo texto para cada tarea, lo cual no es muy interesante. Deberíamos poder pasar datos del ámbito principal a los componentes secundarios. Modifiquemos la definición del componente para que acepte un <b>accesorio</b> :</p>
-<pre><code>Vue.component(<span>'todo-item'</span>, {
-  <span>// The todo-item component now accepts a</span>
-  <span>// "prop", which is like a custom attribute.</span>
-  <span>// This prop is called todo.</span>
-  <span>props</span>: [<span>'todo'</span>],
-  <span>template</span>: <span>'&lt;li&gt;{{ todo.text }}&lt;/li&gt;'</span>
-})</code></pre>
-<p>Ahora podemos pasar la tarea a cada componente repetido usando <code>v-bind</code>:</p>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app-7"</span>&gt;</span>
-  <span>&lt;<span>ol</span>&gt;</span>
-    <span>&lt;!--
-      Now we provide each todo-item with the todo object
-      it's representing, so that its content can be dynamic.
-      We also need to provide each component with a "key",
-      which will be explained later.
-    --&gt;</span>
-    <span>&lt;<span>todo-item</span>
-      <span>v-for</span>=<span>"item in groceryList"</span>
-      <span>v-bind:todo</span>=<span>"item"</span>
-      <span>v-bind:key</span>=<span>"item.id"</span>
-    &gt;</span><span>&lt;/<span>todo-item</span>&gt;</span>
-  <span>&lt;/<span>ol</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
-<br>
-<pre><code>Vue.component(<span>'todo-item'</span>, {
-  <span>props</span>: [<span>'todo'</span>],
-  <span>template</span>: <span>'&lt;li&gt;{{ todo.text }}&lt;/li&gt;'</span><font></font>
-})<font></font>
-<font></font>
-<span>var</span> app7 = <span>new</span> Vue({
-  <span>el</span>: <span>'#app-7'</span>,
-  <span>data</span>: {
-    <span>groceryList</span>: [<font></font>
-      { <span>id</span>: <span class="hljs-number">0</span>, <span>text</span>: <span>'Vegetables'</span> },<font></font>
-      { <span>id</span>: <span class="hljs-number">1</span>, <span>text</span>: <span>'Cheese'</span> },<font></font>
-      { <span>id</span>: <span class="hljs-number">2</span>, <span>text</span>: <span>'Whatever else humans are supposed to eat'</span> }<font></font>
-    ]<font></font>
-  }<font></font>
-})</code></pre>
-<p>Este es un ejemplo artificial, pero hemos logrado separar nuestra aplicación en dos unidades más pequeñas, y el hijo está razonablemente bien desacoplado del padre a través de la interfaz de accesorios. Ahora podemos mejorar aún más nuestro <code>todo-item</code> componente con una plantilla y una lógica más complejas sin afectar la aplicación principal.</p>
-<p>En una aplicación grande, es necesario dividir toda la aplicación en componentes para que el desarrollo sea manejable. Hablaremos mucho más sobre los componentes más adelante en la guía , pero aquí hay un ejemplo (imaginario) de cómo se vería la plantilla de una aplicación con componentes:</p>
 <pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app"</span>&gt;</span>
-  <span>&lt;<span>app-nav</span>&gt;</span><span>&lt;/<span>app-nav</span>&gt;</span>
-  <span>&lt;<span>app-view</span>&gt;</span>
-    <span>&lt;<span>app-sidebar</span>&gt;</span><span>&lt;/<span>app-sidebar</span>&gt;</span>
-    <span>&lt;<span>app-content</span>&gt;</span><span>&lt;/<span>app-content</span>&gt;</span>
-  <span>&lt;/<span>app-view</span>&gt;</span>
+  <span>&lt;<span>p</span>&gt;</span>{{ foo }}<span>&lt;/<span>p</span>&gt;</span>
+  <span>&lt;!-- this will no longer update `foo`! --&gt;</span>
+  <span>&lt;<span>button</span> <span>v-on:click</span>=<span>"foo = 'baz'"</span>&gt;</span>Change it<span>&lt;/<span>button</span>&gt;</span>
 <span>&lt;/<span>div</span>&gt;</span></code></pre>
-<h3>Relación con elementos personalizados</h3>
-<p>Es posible que haya notado que los componentes de Vue son muy similares a los <b>elementos personalizados</b> , que forman parte de la <b>especificación de componentes web</b> . Esto se debe a que la sintaxis del componente de Vue se modela libremente según la especificación. Por ejemplo, los componentes de Vue implementan la <b>API Slot</b> y el <code>is</code> atributo especial. Sin embargo, existen algunas diferencias clave:</p>
-<ul>
-  <li>La especificación de componentes web se ha finalizado, pero no se implementa de forma nativa en todos los navegadores. Safari 10.1+, Chrome 54+ y Firefox 63+ admiten componentes web de forma nativa. En comparación, los componentes de Vue no requieren polyfills y funcionan de manera consistente en todos los navegadores compatibles (IE9 y superior). Cuando sea necesario, los componentes de Vue también se pueden envolver dentro de un elemento personalizado nativo.</li>
-  <li>Los componentes de Vue brindan características importantes que no están disponibles en elementos personalizados simples, en particular el flujo de datos de componentes cruzados, la comunicación de eventos personalizados e integraciones de herramientas de construcción.</li>
-</ul>
-<p>Aunque Vue no usa elementos personalizados internamente, tiene una <b>gran interoperabilidad</b> cuando se trata de consumir o distribuir como elementos personalizados. Vue CLI también admite la creación de componentes de Vue que se registran como elementos personalizados nativos.</p>
+
+<p>Además de las propiedades de datos, las instancias de Vue exponen una serie de métodos y
+    propiedades de instancia útiles. Estos tienen el prefijo <code>$</code> para diferenciarlos
+    de las propiedades definidas por el usuario. Por ejemplo:</p>
+<pre><code><span>var</span> data = { <span>a</span>: <span>1</span> }
+<span>var</span> vm = <span>new</span> Vue({
+  <span>el</span>: <span>'#example'</span>,
+  <span>data</span>: data
+})
+
+vm.$data === data <span>// =&gt; true</span>
+vm.$el === <span>document</span>.getElementById(<span>'example'</span>) <span>// =&gt; true</span>
+
+<span>// $watch is an instance method</span>
+vm.$watch(<span>'a'</span>, <span><span>function</span> (<span>newValue, oldValue</span>) </span>{
+  <span>// This callback will be called when `vm.a` changes</span>
+})</code></pre>
+<p>En el futuro, puede consultar la documentación de la
+    API para una lista completa de propiedades y métodos de instancia.</p>
+<h2>Hooks del Ciclo de vida
+    de la Instancia</h2>
+<p>Cada instancia de Vue pasa a través de una serie de pasos de inicialización cuando es creada
+    - por ejemplo, se necesita configurar la observación de datos, compilar la plantilla, montar
+    la instancia en el DOM y actualizar el DOM cuando cambian los datos. En el camino, también
+    se ejecutan funciones llamadas <strong>hooks del ciclo de vida</strong>, lo que brinda a los
+    usuarios la oportunidad de agregar su propio código en etapas específicas.</p>
+<p>Por ejemplo, el hook <code>created</code> puede ser utilizado
+    para ejecutar código después que una instancia es creada:</p>
+<pre><code><span>new</span> Vue({
+  <span>data</span>: {
+    <span>a</span>: <span>1</span>
+  },
+  <span>created</span>: <span><span>function</span> (<span></span>) </span>{
+    <span>// `this` points to the vm instance</span>
+    <span>console</span>.log(<span>'a is: '</span> + <span>this</span>.a)
+  }
+})
+<span>// =&gt; "a is: 1"</span></code></pre>
+<p>También hay otros hooks que se llamarán en diferentes etapas del ciclo de vida de la
+    instancia, como <code>mounted</code>, <code>updated</code>, y <code>destroyed</code>. Todos los
+    hooks del ciclo de
+    vida se llaman en el contexto <code>this</code> apuntando a la instancia de Vue que lo
+    invoca.</p>
+<p>No usar arrow functions en una propiedad de opciones o
+    respuesta, como <code>created: () =&gt; console.log(this.a)</code> or <code>vm.$watch('a',
+        newValue =&gt; this.myMethod())</code>. Dado que las arrow functions están vinculadas al
+    contexto padre, <code>this</code> no será la instancia de Vue como lo esperaría, lo que
+    suele producir errores, como ‘Uncaught TypeError: Cannot read property of
+    undefined<code>o</code>Uncaught TypeError: this.myMethod is not a function`.</p>
+
+<h2>Diagrama
+    del Ciclo de vida</h2>
+<p>La imagen de abajo es un diagrama para el ciclo de vida de una instancia. No es necesario que
+    entienda como funciona todo en este momento, pero a medida que aprenda y construya más, será
+    una referencia útil.</p>
+<img src="asset://assets/img/lifecycle.png" alt="">
