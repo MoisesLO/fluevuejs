@@ -62,6 +62,11 @@ class _DetailState extends State<Detail> {
               return {'color': '#42b983'};
             }
 
+            // Code color naranja
+            if (element.localName == 'code') {
+              return {'color': '#e96900'};
+            }
+
             return null;
           },),
         )],

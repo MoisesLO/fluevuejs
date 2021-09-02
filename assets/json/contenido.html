@@ -1,154 +1,92 @@
-<h1>Propiedades Computadas y Observadores</h1>
-
-<h2><span class="link">Propiedades Computadas</span></h2>
-<p>Las expresiones en el <em>template</em> son muy convenientes, pero están diseñadas para operaciones simples. Poner demasiada lógica en sus <em>templates</em> puede hacerlos grandes, complejos y difíciles de mantener. Por ejemplo:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example"</span>&gt;</span>
-  {{ message.split('').reverse().join('') }}
+<h1>Enlace Clases y Estilos</h1>
+<p>Una necesidad común de data binding es manipular la lista de clases de un elemento y sus estilos en línea. Como ambos son atributos, podemos usar <code>v-bind</code> para manejarlos: solo necesitamos crear una cadena de texto con nuestras expresiones. Sin embargo, concatenar cadenas de texto puede llegar a ser incómodo y propenso a errores. Por esta razón, Vue proporciona mejoras cuando se utiliza <code>v-bind</code> con<code>class</code> y <code>style</code>. Además de las cadenas de texto, las expresiones también pueden evaluar objetos o matrices.</p>
+<h2>Enlace de clases HTML</h2><h3>Sintaxis de Objeto</h3><p>Podemos pasar un objeto a <code>v-bind:class</code> para la asignación dinámica de clases:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>La sintaxis de arriba tiene como resultado la clase <code>active</code> según el valor booleano(<span class="link">https://developer.mozilla.org/en-US/docs/Glossary/Truthy</span>) de la propiedad <code>isActive</code>.</p>
+<p>Puede hacer multiple asignación de clases al tener más campos en el objeto. Además, la directiva <code>v-bind:class</code> también puede ser utilizada con el atributo <code>class</code>. De modo que con la siguiente plantilla:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"static"</span></span>
+<span class="tag">     <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive, 'text-danger': hasError }"</span>&gt;</span>
 <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>En este punto, el <em>template</em> ya no es simple y declarativo. Debe mirarlo por un segundo antes de darse cuenta de que muestra <code>message</code> al revés. El problema se agrava cuando desea incluir el mensaje invertido en su <em>template</em> más de una vez.</p>
-<p>Es por eso que para cualquier lógica compleja, deberia usar una <strong>propiedad computada</strong>.</p>
-<h3><span class="link">Ejemplo Básico</span></h3>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example"</span>&gt;</span>
-  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje original: "{{ message }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
-  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje invertido computado: "{{ reversedMessage }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
-  el: <span class="string">'#example'</span>,
-  data: {
-    message: <span class="string">'Hola'</span>
-  },
-  computed: {
-    <span class="comment">// un getter computado</span>
-    reversedMessage: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-      <span class="comment">// `this` apunta a la instancia vm</span>
-      <span class="keyword">return</span> <span class="keyword">this</span>.message.split(<span class="string">''</span>).reverse().join(<span class="string">''</span>)
-    }
-  }
-})</span></pre>
-
-
-<p>Aquí hemos declarado una propiedad computada <code>reversedMessage</code>. La función que
-proporcionemos se utilizará como la función getter para la propiedad <code>vm.reversedMessage</code>:</p>
-<pre><span class="built_in">console</span>.log(vm.reversedMessage) <span class="comment">// =&gt; 'aloH'</span>
-vm.message = <span class="string">'Adios'</span>
-<span class="built_in">console</span>.log(vm.reversedMessage) <span class="comment">// =&gt; 'soidA'</span></span></pre>
-<p>Puede abrir la consola y jugar con el ejemplo vm usted mismo. El valor de <code>vm.reversedMessage</code> siempre depende del valor de <code>vm.message</code>.</p>
-<p>Puede enlazar datos a propiedades computadas en el <em>template</em> al igual que una propiedad normal. Vue es consciente de que <code>vm.reversedMessage</code> depende de <code>vm.message</code>, por lo cual actualizará todos los enlaces que dependan de <code>vm.reversedMessage</code> cuando <code>vm.message</code> cambie. Y lo mejor de todo es que hemos creado esta relación de dependencia de manera declarativa: la función computada getter no tiene efectos secundarios, lo que facilita la prueba y la comprensión.</p>
-<h3><span class="link">Caching computado vs Métodos</span></h3>
-<p>Es posible que haya notado que podemos lograr el mismo resultado al invocar un método en la expresión:</p>
-<pre><span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje Invertido: "{{ reverseMessage() }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
-<pre><span class="comment">// en componente</span>
-methods: {
-  reverseMessage: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-    <span class="keyword">return</span> <span class="keyword">this</span>.message.split(<span class="string">''</span>).reverse().join(<span class="string">''</span>)
+<p>Y el siguiente objeto <code>data</code>:</p>
+<pre>data: {
+  isActive: <span class="literal">true</span>,
+  hasError: <span class="literal">false</span>
+}</span></pre>
+<p>Se renderizará:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"static active"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>Cuando <code>isActive</code> o <code>hasError</code> cambien, la lista de clases se actualizará consecuentemente. Por ejemplo, si <code>hasError</code> se convierte en <code>true</code>, la lista de clases se convertirá en <code>"static active text-danger"</code>.</p>
+<p>El objeto no tiene por qué estar en la misma línea:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"classObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>data: {
+  classObject: {
+    active: <span class="literal">true</span>,
+    <span class="string">'text-danger'</span>: <span class="literal">false</span>
   }
 }</span></pre>
-<p>En lugar de una propiedad computada, podemos definir la misma función como un método en su lugar. Para el resultado final, los dos enfoques son exactamente los mismos. Sin embargo, la diferencia es que las <strong>propiedades computadas se almacenan en caché según sus dependencias.</strong> Una propiedad computada solo se volverá a evaluar cuando alguna de sus dependencias haya cambiado. Esto significa que mientras <code>message</code> no haya cambiado, el acceso múltiple a la propiedad computada de <code>reverseMessage</code> regresará inmediatamente el resultado previamente calculado sin tener que ejecutar la función de nuevo.</p>
-<p>Esto también significa que la siguiente propiedad computada nunca se actualizará, porque <code>Date.now()</code> no es una dependencia reactiva:</p>
-<pre>computed: {
-  now: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-    <span class="keyword">return</span> <span class="built_in">Date</span>.now()
-  }
-}</span></pre>
-<p>En comparación, una invocación de método <strong>siempre</strong> ejecutará la función cada vez que ocurre una re-renderizacion.</p>
-<p>¿Por qué necesitamos caché? Imagina que tenemos una costosa propiedad computada <strong>A</strong>, que requiere hacer un bucle a través de una gran matriz y hace muchos cálculos. Entonces podemos tener otras propiedades computadas que a su vez dependen de <strong>A</strong>. Sin caché, estaríamos ejecutando el captador de <strong>A</strong> muchas veces más de lo necesario. En los casos en que no desee el almacenamiento en caché, utilice un método en su lugar.</p>
-<h3><span class="link">Propiedad Computada vs Watched</span></h3>
-<p>Vue proporciona una forma más genérica de observar y reaccionar a los cambios de datos en una instancia de Vue: <strong>propiedad watch</strong>. Cuando tiene algunos datos que necesitan cambiarse en función de otros datos, es tentador utilizar <code>watch</code> en exceso, especialmente si proviene de tener experiencia en AngularJS. Sin embargo, a menudo es una mejor idea usar una propiedad computada en lugar de una imperativa llamada a <code>watch</code> . Considera este ejemplo:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"demo"</span>&gt;</span>{{ fullName }}<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
-  el: <span class="string">'#demo'</span>,
-  data: {
-    firstName: <span class="string">'Foo'</span>,
-    lastName: <span class="string">'Bar'</span>,
-    fullName: <span class="string">'Foo Bar'</span>
-  },
-  watch: {
-    firstName: <span class="function"><span class="fkeyword">function</span> (<span class="params">val</span>) </span>{
-      <span class="keyword">this</span>.fullName = val + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
-    },
-    lastName: <span class="function"><span class="fkeyword">function</span> (<span class="params">val</span>) </span>{
-      <span class="keyword">this</span>.fullName = <span class="keyword">this</span>.firstName + <span class="string">' '</span> + val
-    }
-  }
-})</span></pre>
-<p>El código anterior es imperativo y repetitivo. Compáralo con una versión de propiedad computada:</p>
-<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
-  el: <span class="string">'#demo'</span>,
-  data: {
-    firstName: <span class="string">'Foo'</span>,
-    lastName: <span class="string">'Bar'</span>
-  },
-  computed: {
-    fullName: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-      <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
-    }
-  }
-})</span></pre>
-<p>Mucho mejor, ¿no?</p>
-<h3><span class="link">Setter Computado</span></h3>
-<p>Las propiedades computadas son, de forma predeterminada solo get, pero también puede proporcionar un set cuando lo necesite:</p>
-<pre><span class="comment">// ...</span>
+<p>Esto renderizará el mismo resultado. También podemos enlazar una <span class="link">propiedad computada</span> que retorna un objeto. Esto es un patrón común y poderoso:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"classObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>data: {
+  isActive: <span class="literal">true</span>,
+  error: <span class="literal">null</span>
+},
 computed: {
-  fullName: {
-    <span class="comment">// getter</span>
-    get: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-      <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
-    },
-    <span class="comment">// setter</span>
-    set: <span class="function"><span class="fkeyword">function</span> (<span class="params">newValue</span>) </span>{
-      <span class="keyword">var</span> names = newValue.split(<span class="string">' '</span>)
-      <span class="keyword">this</span>.firstName = names[<span class="number">0</span>]
-      <span class="keyword">this</span>.lastName = names[names.length - <span class="number">1</span>]
+  classObject: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+    <span class="keyword">return</span> {
+      active: <span class="keyword">this</span>.isActive &amp;&amp; !<span class="keyword">this</span>.error,
+      <span class="string">'text-danger'</span>: <span class="keyword">this</span>.error &amp;&amp; <span class="keyword">this</span>.error.type === <span class="string">'fatal'</span>
     }
   }
-}
-<span class="comment">// ...</span></span></pre>
-<p>Ahora, cuando ejecute <code>vm.fullName = 'John Doe'</code>, se invocará el definidor y <code>vm.firstName</code> y <code>vm.lastName</code> se actualizarán en consecuencia.</p>
-<h2><span class="link">Watchers</span></h2>
-<p>Si bien las propiedades computadas son más apropiadas en la mayoría de los casos, hay ocasiones en que es necesario un observador personalizado. Es por eso que Vue proporciona una forma más genérica de reaccionar a los cambios de datos a través de la opción <code>watch</code>. Esto es más útil cuando desea realizar operaciones asíncronas o costosas en respuesta al cambio de datos.</p>
-<p>por ejemplo:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"watch-example"</span>&gt;</span>
-  <span class="tag">&lt;<span class="name">p</span>&gt;</span>
-    Haz una pregunta de sí/no:
-    <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model</span>=<span class="string">"question"</span>&gt;</span>
-  <span class="tag">&lt;/<span class="name">p</span>&gt;</span>
-  <span class="tag">&lt;<span class="name">p</span>&gt;</span>{{ answer }}<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
-<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>
-var watchExampleVM = new Vue({
-  el: '#watch-example',
-  data: {
-    question: '',
-    answer: 'No puedo darte una respuesta hasta que hagas una pregunta!!'
-  },
-  watch: {
-    question: function (newQuestion, oldQuestion) {
-      this.answer = 'Esperando que deje de escribir......'
-      this.debouncedGetAnswer()
-    }
-  },
-  created: function () {
-    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
-  },
-  methods: {
-    getAnswer:  function () {
-      if (this.question.indexOf('?') === -1) {
-        this.answer = 'Las preguntas suelen contener un signo de interrogación. ;-)'
-        return
-      }
-      this.answer = 'Pensando...'
-      var vm = this
-      axios.get('https://yesno.wtf/api')
-        .then(function (response) {
-          vm.answer = _.capitalize(response.data.answer)
-        })
-        .catch(function (error) {
-          vm.answer = '¡Error! No se pudo alcanzar la API. ' + error
-        })
-    }
+}</span></pre>
+<h3>Sintaxis de Array</h3><p>Pasamos un array a <code>v-bind:class</code> para aplicar una lista de clases:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[activeClass, errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>data: {
+  activeClass: <span class="string">'active'</span>,
+  errorClass: <span class="string">'text-danger'</span>
+}</span></pre>
+<p>Que renderizará:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"active text-danger"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>Si le gustaría activar una clase en la lista de manera condicional, usted puede hacerlo con una expresión ternaria:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[isActive ? activeClass : '', errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>Esto siempre aplicará <code>errorClass</code>, pero solo aplicará <code>activeClass</code> cuando <code>isActive</code> sea verdadero.</p>
+<p>Sin embargo, esto puede ser un poco verborrágico si usted tiene multiple clases condicionales. Por eso también es posible utilizar la sintaxis de objeto dentro de la sintaxis de colección:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[{ active: isActive }, errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<h3>Con Componentes</h3><blockquote>
+<p>Esta sección asume que usted tiene conocimientos sobre <span class="link">Componentes de Vue</span>. Siéntase libre de saltársela y volver más tarde.</p>
+</blockquote>
+<p>Cuando usa el atributo <code>class</code> en un componente personalizado, estas clases se agregarán al elemento raíz del componente. Las clases existentes en este elemento no serán sobreescritas.</p>
+<p>Por ejemplo, si declara este componente:</p>
+<pre>Vue.component(<span class="string">'my-component'</span>, {
+  template: <span class="string">'&lt;p class="foo bar"&gt;Hi&lt;/p&gt;'</span>
+})</span></pre>
+<p>Y agrega algunas clases al usarlo:</p>
+<pre><span class="tag">&lt;<span class="name">my-component</span> <span class="attr">class</span>=<span class="string">"baz boo"</span>&gt;</span><span class="tag">&lt;/<span class="name">my-component</span>&gt;</span></span></pre>
+<p>El HTML renderizado será:</p>
+<pre><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"foo bar baz boo"</span>&gt;</span>Hi<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
+<p>Lo mismo aplica para el enlace de clases:</p>
+<pre><span class="tag">&lt;<span class="name">my-component</span> <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive }"</span>&gt;</span><span class="tag">&lt;/<span class="name">my-component</span>&gt;</span></span></pre>
+<p>Cuando <code>isActive</code> es verdadero, el HTML renderizado será:</p>
+<pre><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"foo bar active"</span>&gt;</span>Hi<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
+<h2>Enlace de estilos en línea</h2><h3>Sintaxis de Objeto</h3><p>La sintaxis de objeto para <code>v-bind:style</code> es muy sencilla - es similar a CSS, excepto que es un objeto JavaScript. Puede usar tanto camelCase como kebab-case (use comillas con kebab-case) para los nombres de propiedades CSS:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"{ color: activeColor, fontSize: fontSize + 'px' }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>data: {
+  activeColor: <span class="string">'red'</span>,
+  fontSize: <span class="number">30</span>
+}</span></pre>
+<p>A menudo es una buena idea enlazar directamente un objeto de estilo para que la plantilla sea más limpia:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"styleObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>data: {
+  styleObject: {
+    color: <span class="string">'red'</span>,
+    fontSize: <span class="string">'13px'</span>
   }
-})
-</pre>
-  
-<p>En este caso, el uso de la opción <code>watch</code> nos permite realizar una operación asíncrona (acceder a una API), limita la frecuencia con la que realizamos esa operación y establece estados intermedios hasta que obtengamos una respuesta final. Nada de eso sería posible con una propiedad computada.</p>
-<p>Además de la opción <code>watch</code>, también puede usar el imperativo <span class="link">vm.$Watch API</span>.</p>
+}</span></pre>
+<p>Nuevamente, la sintaxis de objeto es a menudo usada en conjunción con propiedades computadas que retornan objetos.</p>
+<h3>Sintaxis de Array</h3><p>La sintaxis de array <code>v-bind:style</code> permite aplicar múltiples objetos de estilo al mismo elemento:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"[baseStyles, overridingStyles]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<h3>Auto-prefijado</h3><p>Cuando utilice una propiedad CSS que requiera <span class="link">prefijos de proveedores</span> en <code>v-bind:style</code>, como por ejemplo <code>transform</code>, Vue detectará automaticamente y agregará los prefijos correspondientes a los estilos aplicados.</p>
+<h3>Valores múltiples</h3><blockquote>
+<p>2.3.0+</p>
+</blockquote>
+<p>Desde la versión 2.3.0+ usted puede proveer un array de valores múltiples (de prefijos) a una propiedad de estilo, por ejemplo:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>Esto solo renderizará el ultimo valor en el array que el navegador soporte. En este ejemplo, se renderizará <code>display: flex</code> para los navegadores que soportan la versión sin prefijo de flexbox.</p>
