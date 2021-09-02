@@ -42,6 +42,26 @@ class _DetailState extends State<Detail> {
               return {'color': '#e96900', 'font-weight': 'bold'};
             }
 
+            // comentario en codigo
+            if (element.classes.contains('comment')) {
+              return {'color': '#b3b3b3'};
+            }
+
+            // variable en codigo
+            if (element.classes.contains('keyword')) {
+              return {'color': '#e96900'};
+            }
+
+            // key de codigo de funcion built_in
+            if (element.classes.contains('fkeyword')) {
+              return {'color': '#0092db'};
+            }
+
+            // Codigo console verde
+            if (element.classes.contains('built_in')) {
+              return {'color': '#42b983'};
+            }
+
             return null;
           },),
         )],

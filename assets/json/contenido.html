@@ -1,121 +1,154 @@
-<h1>Sintaxis de Template</h1>
-<p>Vue.js utiliza una sintaxis de template basada en HTML que le permite vincular de forma
-    declarativa el DOM renderizado a los datos de la instancia de Vue subyacente. Todas las
-    templates de Vue.js son HTML válidas que pueden analizarse mediante navegadores compatibles con
-    especificaciones y analizadores de HTML.</p>
-<p>Bajo el capó, Vue compila las templates en funciones de renderizado del DOM virtual. Combinado
-    con el sistema de reactividad, Vue puede averiguar de manera inteligente el número mínimo de
-    componentes para volver a renderizar y aplicar la cantidad mínima de manipulacion del DOM cuando
-    el estado de la aplicacion cambia.</p>
-<p>Si está familiarizado con los conceptos de DOM virtual y prefiere la potencia bruta de
-    JavaScript, también puede escribir directamente funciones de procesamiento en lugar de
-    plantillas, con soporte opcional de JSX.</p>
-<h2>Interpolaciones</h2><h3>Texto</h3><p>La forma más básica de enlace de datos es la interpolación
-    de texto usando la sintaxis de <em>mustaches</em> (llaves doble):</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Message: {{ msg }}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></code></pre>
-<p>La etiqueta del <em>mustache</em> se reemplazará con el valor de la propiedad <code>msg</code> en
-    el objeto de datos correspondiente. También se actualizará cada vez que cambie la propiedad
-    <code>msg</code> del objeto de datos.</p>
-<p>También puede realizar interpolaciones únicas que no se actualizan en el cambio de datos usando
-    la directiva v-once, pero tenga en cuenta que esto también afectará a cualquier otro enlace en
-    el mismo nodo:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">v-once</span>&gt;</span>This will never change: {{ msg }}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></code></pre>
-<h3>HTML Puro</h3><p>Los <em>mustaches</em> (llaves doble) interpretan los datos como texto plano,
-    no HTML. Para generar HTML real, deberá utilizar la directiva <code>v-html</code>:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Using mustaches: {{ rawHtml }}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Using v-html directive: <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">v-html</span>=<span class="hljs-string">"rawHtml"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></pre>
-<p>El contenido del <code>span</code> se reemplazará con el valor de la propiedad
-    <code>rawHtml</code>, interpretado como HTML simple: se ignoran los enlaces de datos. Tenga en
-    cuenta que no puede utilizar <code>v-html</code> para componer plantillas parciales, porque Vue
-    no es un motor de plantillas basado en cadenas. En cambio, se prefieren los componentes como la
-    unidad fundamental para la reutilización y la composición de la interfaz de usuario.</p>
-<p>La ejecución dinámica de HTML arbitrario en su sitio web puede ser muy peligrosa porque puede
-    conducir fácilmente a vulnerabilidades de XSS. Utilice solo la interpolación HTML en contenido
-    de confianza y <strong>nunca</strong> en contenido proporcionado por usuario.</p>
+<h1>Propiedades Computadas y Observadores</h1>
 
-<h3>Atributos</h3><p>Los <em>mustaches</em> (llaves doble) no se pueden utilizar dentro de los
-    atributos HTML. En su lugar, use una directiva v-bind:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-bind:id</span>=<span class="hljs-string">"dynamicId"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></code></pre>
-<p>En el caso de los atributos booleanos, donde su mera existencia implica <code>true</code>, <code>v-bind</code>
-    funciona de manera un poco diferente. En este ejemplo:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">v-bind:disabled</span>=<span class="hljs-string">"isButtonDisabled"</span>&gt;</span>Button<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></code></pre>
-<p>Si <code>isButtonDisabled</code> tiene el valor de <code>null</code>, <code>undefined</code> o
-    <code>false</code>, el atributo <code>disabled</code> ni siquiera se incluirá en el elemento
-    <code>&lt;button&gt;</code> representado.</p>
-<h3>Usando Expresiones JavaScript</h3><p>Hasta ahora solo hemos estado vinculando a simples claves
-    de propiedad en nuestras template. Pero Vue.js realmente admite el poder completo de las
-    expresiones de JavaScript dentro de todos los enlaces de datos:</p>
-<pre><code class="hljs html">{{ number + 1 }}
+<h2><span class="link">Propiedades Computadas</span></h2>
+<p>Las expresiones en el <em>template</em> son muy convenientes, pero están diseñadas para operaciones simples. Poner demasiada lógica en sus <em>templates</em> puede hacerlos grandes, complejos y difíciles de mantener. Por ejemplo:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example"</span>&gt;</span>
+  {{ message.split('').reverse().join('') }}
+<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<p>En este punto, el <em>template</em> ya no es simple y declarativo. Debe mirarlo por un segundo antes de darse cuenta de que muestra <code>message</code> al revés. El problema se agrava cuando desea incluir el mensaje invertido en su <em>template</em> más de una vez.</p>
+<p>Es por eso que para cualquier lógica compleja, deberia usar una <strong>propiedad computada</strong>.</p>
+<h3><span class="link">Ejemplo Básico</span></h3>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example"</span>&gt;</span>
+  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje original: "{{ message }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
+  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje invertido computado: "{{ reversedMessage }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
+  el: <span class="string">'#example'</span>,
+  data: {
+    message: <span class="string">'Hola'</span>
+  },
+  computed: {
+    <span class="comment">// un getter computado</span>
+    reversedMessage: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+      <span class="comment">// `this` apunta a la instancia vm</span>
+      <span class="keyword">return</span> <span class="keyword">this</span>.message.split(<span class="string">''</span>).reverse().join(<span class="string">''</span>)
+    }
+  }
+})</span></pre>
 
-{{ ok ? 'YES' : 'NO' }}
 
-{{ message.split('').reverse().join('') }}
-
-<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-bind:id</span>=<span class="hljs-string">"'list-' + id"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></code></pre>
-<p>Estas expresiones se evaluarán como JavaScript en el ámbito de datos de la instancia de Vue del
-    propietario. Una restricción es que cada enlace solo puede contener <strong>una
-        expresión</strong>, por lo que lo siguiente <strong>NO</strong> funcionará:</p>
-<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- this is a statement, not an expression: --&gt;</span>
-{{ var a = 1 }}
-
-<span class="hljs-comment">&lt;!-- flow control won't work either, use ternary expressions --&gt;</span>
-{{ if (ok) { return message } }}</code></pre>
-<p>Las expresiones de template están en un espacio aislado y solo tienen acceso a una lista blanca
-    de elementos globales como <code>Matemáticas</code> y <code>Fecha</code>. No debe intentar
-    acceder a globales definidos por el usuario en expresiones de template.</p>
-
-<h2>Directivas</h2><p>Las directivas son atributos especiales con el prefijo <code>v-</code>. Se
-    espera que los valores de atributo de la directiva sean <strong>una única expresión de
-        JavaScript</strong> (con la excepción de <code>v-for</code>, que se tratará más adelante).
-    El trabajo de una directiva es aplicar reactivamente efectos secundarios al DOM cuando cambia el
-    valor de su expresión. Repasemos el ejemplo que vimos en la introducción:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">"seen"</span>&gt;</span>Now you see me<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></pre>
-<p>Aquí, la directiva <code>v-if</code> insertaría/eliminaría el elemento </p><p> basándose en la
-    veracidad del valor de la expresión <code>seen</code>.</p>
-<h3>Argumentos</h3><p>Algunas directivas pueden tomar un “argumento”, denotado por dos puntos
-    después del nombre de la directiva. Por ejemplo, la directiva <code>v-bind</code> se usa para
-    actualizar de forma reactiva un atributo HTML:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-bind:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
-<p>Aquí href es el argumento, que le dice a la directiva <code>v-bind</code> que vincule el atributo
-    <code>href</code> del elemento al valor de la expresión <code>url</code>.</p>
-<p>Otro ejemplo es la directiva <code>v-on</code>, que escucha los eventos DOM:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-on:click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
-<p>Aquí el argumento es el nombre del evento a escuchar. Hablaremos sobre el manejo de eventos con
-    más detalle también.</p>
-<h3>Modificadores</h3><p>Los modificadores son sufijos especiales indicados por un punto, que
-    indican que una directiva debe estar vinculada de alguna manera especial. Por ejemplo, el
-    modificador <code>.prevent</code> le dice a la directiva <code>v-on</code> que llame a <code>event.preventDefault()</code>
-    en el evento activado:</p>
-<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">v-on:submit.prevent</span>=<span class="hljs-string">"onSubmit"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></code></pre>
-<p>Más adelante veremos otros ejemplos de modificadores, para <code>v-on</code> y para
-    <code>v-model</code>, cuando exploremos esas características.</p>
-<h2>Modo abreviado</h2><p>El prefijo <code>v-</code> sirve como una señal visual para identificar
-    atributos específicos de Vue en sus templates. Esto es útil cuando está utilizando Vue.js para
-    aplicar un comportamiento dinámico a algún marcado existente, pero puede sentirse detallado para
-    algunas directivas de uso frecuente. Al mismo tiempo, la necesidad del prefijo <code>v-</code>
-    es menos importante cuando se está construyendo un SPA donde Vue.js administra cada template.
-    Por lo tanto, Vue.js proporciona abreviaturas especiales para dos de las directivas más
-    utilizadas, <code>v-bind</code> y <code>v-on</code>:</p>
-<h3><code>v-bind</code> Abreviado</h3>
-<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- full syntax --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-bind:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
-
-<span class="hljs-comment">&lt;!-- shorthand --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
-
-<span class="hljs-comment">&lt;!-- shorthand with dynamic argument (2.6.0+) --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">:</span>[<span class="hljs-attr">key</span>]=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
-<h3><code>v-on</code> Abreviado</h3>
-<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- full syntax --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-on:click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
-
-<span class="hljs-comment">&lt;!-- shorthand --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
-
-<span class="hljs-comment">&lt;!-- shorthand with dynamic argument (2.6.0+) --&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">a</span> @[<span class="hljs-attr">event</span>]=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
-<p>Pueden parecer un poco diferentes del HTML normal, pero <code>:</code> y <code>@</code> son
-    caracteres válidos para los nombres de atributos y todos los navegadores compatibles con Vue.js
-    pueden analizarlo correctamente. Además, no aparecen en el marcado final renderizado. La
-    sintaxis abreviada es totalmente opcional, pero es probable que la aprecie cuando sepa más sobre
-    su uso más adelante.</p>
+<p>Aquí hemos declarado una propiedad computada <code>reversedMessage</code>. La función que
+proporcionemos se utilizará como la función getter para la propiedad <code>vm.reversedMessage</code>:</p>
+<pre><span class="built_in">console</span>.log(vm.reversedMessage) <span class="comment">// =&gt; 'aloH'</span>
+vm.message = <span class="string">'Adios'</span>
+<span class="built_in">console</span>.log(vm.reversedMessage) <span class="comment">// =&gt; 'soidA'</span></span></pre>
+<p>Puede abrir la consola y jugar con el ejemplo vm usted mismo. El valor de <code>vm.reversedMessage</code> siempre depende del valor de <code>vm.message</code>.</p>
+<p>Puede enlazar datos a propiedades computadas en el <em>template</em> al igual que una propiedad normal. Vue es consciente de que <code>vm.reversedMessage</code> depende de <code>vm.message</code>, por lo cual actualizará todos los enlaces que dependan de <code>vm.reversedMessage</code> cuando <code>vm.message</code> cambie. Y lo mejor de todo es que hemos creado esta relación de dependencia de manera declarativa: la función computada getter no tiene efectos secundarios, lo que facilita la prueba y la comprensión.</p>
+<h3><span class="link">Caching computado vs Métodos</span></h3>
+<p>Es posible que haya notado que podemos lograr el mismo resultado al invocar un método en la expresión:</p>
+<pre><span class="tag">&lt;<span class="name">p</span>&gt;</span>Mensaje Invertido: "{{ reverseMessage() }}"<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
+<pre><span class="comment">// en componente</span>
+methods: {
+  reverseMessage: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+    <span class="keyword">return</span> <span class="keyword">this</span>.message.split(<span class="string">''</span>).reverse().join(<span class="string">''</span>)
+  }
+}</span></pre>
+<p>En lugar de una propiedad computada, podemos definir la misma función como un método en su lugar. Para el resultado final, los dos enfoques son exactamente los mismos. Sin embargo, la diferencia es que las <strong>propiedades computadas se almacenan en caché según sus dependencias.</strong> Una propiedad computada solo se volverá a evaluar cuando alguna de sus dependencias haya cambiado. Esto significa que mientras <code>message</code> no haya cambiado, el acceso múltiple a la propiedad computada de <code>reverseMessage</code> regresará inmediatamente el resultado previamente calculado sin tener que ejecutar la función de nuevo.</p>
+<p>Esto también significa que la siguiente propiedad computada nunca se actualizará, porque <code>Date.now()</code> no es una dependencia reactiva:</p>
+<pre>computed: {
+  now: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+    <span class="keyword">return</span> <span class="built_in">Date</span>.now()
+  }
+}</span></pre>
+<p>En comparación, una invocación de método <strong>siempre</strong> ejecutará la función cada vez que ocurre una re-renderizacion.</p>
+<p>¿Por qué necesitamos caché? Imagina que tenemos una costosa propiedad computada <strong>A</strong>, que requiere hacer un bucle a través de una gran matriz y hace muchos cálculos. Entonces podemos tener otras propiedades computadas que a su vez dependen de <strong>A</strong>. Sin caché, estaríamos ejecutando el captador de <strong>A</strong> muchas veces más de lo necesario. En los casos en que no desee el almacenamiento en caché, utilice un método en su lugar.</p>
+<h3><span class="link">Propiedad Computada vs Watched</span></h3>
+<p>Vue proporciona una forma más genérica de observar y reaccionar a los cambios de datos en una instancia de Vue: <strong>propiedad watch</strong>. Cuando tiene algunos datos que necesitan cambiarse en función de otros datos, es tentador utilizar <code>watch</code> en exceso, especialmente si proviene de tener experiencia en AngularJS. Sin embargo, a menudo es una mejor idea usar una propiedad computada en lugar de una imperativa llamada a <code>watch</code> . Considera este ejemplo:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"demo"</span>&gt;</span>{{ fullName }}<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
+  el: <span class="string">'#demo'</span>,
+  data: {
+    firstName: <span class="string">'Foo'</span>,
+    lastName: <span class="string">'Bar'</span>,
+    fullName: <span class="string">'Foo Bar'</span>
+  },
+  watch: {
+    firstName: <span class="function"><span class="fkeyword">function</span> (<span class="params">val</span>) </span>{
+      <span class="keyword">this</span>.fullName = val + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
+    },
+    lastName: <span class="function"><span class="fkeyword">function</span> (<span class="params">val</span>) </span>{
+      <span class="keyword">this</span>.fullName = <span class="keyword">this</span>.firstName + <span class="string">' '</span> + val
+    }
+  }
+})</span></pre>
+<p>El código anterior es imperativo y repetitivo. Compáralo con una versión de propiedad computada:</p>
+<pre><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue({
+  el: <span class="string">'#demo'</span>,
+  data: {
+    firstName: <span class="string">'Foo'</span>,
+    lastName: <span class="string">'Bar'</span>
+  },
+  computed: {
+    fullName: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+      <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
+    }
+  }
+})</span></pre>
+<p>Mucho mejor, ¿no?</p>
+<h3><span class="link">Setter Computado</span></h3>
+<p>Las propiedades computadas son, de forma predeterminada solo get, pero también puede proporcionar un set cuando lo necesite:</p>
+<pre><span class="comment">// ...</span>
+computed: {
+  fullName: {
+    <span class="comment">// getter</span>
+    get: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
+      <span class="keyword">return</span> <span class="keyword">this</span>.firstName + <span class="string">' '</span> + <span class="keyword">this</span>.lastName
+    },
+    <span class="comment">// setter</span>
+    set: <span class="function"><span class="fkeyword">function</span> (<span class="params">newValue</span>) </span>{
+      <span class="keyword">var</span> names = newValue.split(<span class="string">' '</span>)
+      <span class="keyword">this</span>.firstName = names[<span class="number">0</span>]
+      <span class="keyword">this</span>.lastName = names[names.length - <span class="number">1</span>]
+    }
+  }
+}
+<span class="comment">// ...</span></span></pre>
+<p>Ahora, cuando ejecute <code>vm.fullName = 'John Doe'</code>, se invocará el definidor y <code>vm.firstName</code> y <code>vm.lastName</code> se actualizarán en consecuencia.</p>
+<h2><span class="link">Watchers</span></h2>
+<p>Si bien las propiedades computadas son más apropiadas en la mayoría de los casos, hay ocasiones en que es necesario un observador personalizado. Es por eso que Vue proporciona una forma más genérica de reaccionar a los cambios de datos a través de la opción <code>watch</code>. Esto es más útil cuando desea realizar operaciones asíncronas o costosas en respuesta al cambio de datos.</p>
+<p>por ejemplo:</p>
+<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"watch-example"</span>&gt;</span>
+  <span class="tag">&lt;<span class="name">p</span>&gt;</span>
+    Haz una pregunta de sí/no:
+    <span class="tag">&lt;<span class="name">input</span> <span class="attr">v-model</span>=<span class="string">"question"</span>&gt;</span>
+  <span class="tag">&lt;/<span class="name">p</span>&gt;</span>
+  <span class="tag">&lt;<span class="name">p</span>&gt;</span>{{ answer }}<span class="tag">&lt;/<span class="name">p</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
+<pre>
+var watchExampleVM = new Vue({
+  el: '#watch-example',
+  data: {
+    question: '',
+    answer: 'No puedo darte una respuesta hasta que hagas una pregunta!!'
+  },
+  watch: {
+    question: function (newQuestion, oldQuestion) {
+      this.answer = 'Esperando que deje de escribir......'
+      this.debouncedGetAnswer()
+    }
+  },
+  created: function () {
+    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+  },
+  methods: {
+    getAnswer:  function () {
+      if (this.question.indexOf('?') === -1) {
+        this.answer = 'Las preguntas suelen contener un signo de interrogación. ;-)'
+        return
+      }
+      this.answer = 'Pensando...'
+      var vm = this
+      axios.get('https://yesno.wtf/api')
+        .then(function (response) {
+          vm.answer = _.capitalize(response.data.answer)
+        })
+        .catch(function (error) {
+          vm.answer = '¡Error! No se pudo alcanzar la API. ' + error
+        })
+    }
+  }
+})
+</pre>
+  
+<p>En este caso, el uso de la opción <code>watch</code> nos permite realizar una operación asíncrona (acceder a una API), limita la frecuencia con la que realizamos esa operación y establece estados intermedios hasta que obtengamos una respuesta final. Nada de eso sería posible con una propiedad computada.</p>
+<p>Además de la opción <code>watch</code>, también puede usar el imperativo <span class="link">vm.$Watch API</span>.</p>
