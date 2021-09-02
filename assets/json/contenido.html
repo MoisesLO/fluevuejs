@@ -1,92 +1,35 @@
-<h1>Enlace Clases y Estilos</h1>
-<p>Una necesidad común de data binding es manipular la lista de clases de un elemento y sus estilos en línea. Como ambos son atributos, podemos usar <code>v-bind</code> para manejarlos: solo necesitamos crear una cadena de texto con nuestras expresiones. Sin embargo, concatenar cadenas de texto puede llegar a ser incómodo y propenso a errores. Por esta razón, Vue proporciona mejoras cuando se utiliza <code>v-bind</code> con<code>class</code> y <code>style</code>. Además de las cadenas de texto, las expresiones también pueden evaluar objetos o matrices.</p>
-<h2>Enlace de clases HTML</h2><h3>Sintaxis de Objeto</h3><p>Podemos pasar un objeto a <code>v-bind:class</code> para la asignación dinámica de clases:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>La sintaxis de arriba tiene como resultado la clase <code>active</code> según el valor booleano(<span class="link">https://developer.mozilla.org/en-US/docs/Glossary/Truthy</span>) de la propiedad <code>isActive</code>.</p>
-<p>Puede hacer multiple asignación de clases al tener más campos en el objeto. Además, la directiva <code>v-bind:class</code> también puede ser utilizada con el atributo <code>class</code>. De modo que con la siguiente plantilla:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"static"</span></span>
-<span class="tag">     <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive, 'text-danger': hasError }"</span>&gt;</span>
-<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>Y el siguiente objeto <code>data</code>:</p>
-<pre>data: {
-  isActive: <span class="literal">true</span>,
-  hasError: <span class="literal">false</span>
-}</span></pre>
-<p>Se renderizará:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"static active"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>Cuando <code>isActive</code> o <code>hasError</code> cambien, la lista de clases se actualizará consecuentemente. Por ejemplo, si <code>hasError</code> se convierte en <code>true</code>, la lista de clases se convertirá en <code>"static active text-danger"</code>.</p>
-<p>El objeto no tiene por qué estar en la misma línea:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"classObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>data: {
-  classObject: {
-    active: <span class="literal">true</span>,
-    <span class="string">'text-danger'</span>: <span class="literal">false</span>
-  }
-}</span></pre>
-<p>Esto renderizará el mismo resultado. También podemos enlazar una <span class="link">propiedad computada</span> que retorna un objeto. Esto es un patrón común y poderoso:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"classObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>data: {
-  isActive: <span class="literal">true</span>,
-  error: <span class="literal">null</span>
-},
-computed: {
-  classObject: <span class="function"><span class="fkeyword">function</span> (<span class="params"></span>) </span>{
-    <span class="keyword">return</span> {
-      active: <span class="keyword">this</span>.isActive &amp;&amp; !<span class="keyword">this</span>.error,
-      <span class="string">'text-danger'</span>: <span class="keyword">this</span>.error &amp;&amp; <span class="keyword">this</span>.error.type === <span class="string">'fatal'</span>
-    }
-  }
-}</span></pre>
-<h3>Sintaxis de Array</h3><p>Pasamos un array a <code>v-bind:class</code> para aplicar una lista de clases:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[activeClass, errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>data: {
-  activeClass: <span class="string">'active'</span>,
-  errorClass: <span class="string">'text-danger'</span>
-}</span></pre>
-<p>Que renderizará:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"active text-danger"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>Si le gustaría activar una clase en la lista de manera condicional, usted puede hacerlo con una expresión ternaria:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[isActive ? activeClass : '', errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>Esto siempre aplicará <code>errorClass</code>, pero solo aplicará <code>activeClass</code> cuando <code>isActive</code> sea verdadero.</p>
-<p>Sin embargo, esto puede ser un poco verborrágico si usted tiene multiple clases condicionales. Por eso también es posible utilizar la sintaxis de objeto dentro de la sintaxis de colección:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:class</span>=<span class="string">"[{ active: isActive }, errorClass]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<h3>Con Componentes</h3><blockquote>
-<p>Esta sección asume que usted tiene conocimientos sobre <span class="link">Componentes de Vue</span>. Siéntase libre de saltársela y volver más tarde.</p>
+<h1>Renderización Condicional</h1>
+<h2 id="v-if"><a href="#v-if" class="headerlink" title="v-if" data-scroll=""><code>v-if</code></a></h2><p>En los <em>string templates</em>, como por ejemplo, Handlebars, escribiríamos un bloque condicional como este:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template de Handlebars --&gt;</span></span><br><span class="line">{{#if ok}}</span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Sí<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">{{/if}}</span><br></pre></td></tr></tbody></table></figure>
+<p>En Vue, usamos la directiva <code>v-if</code> para lograr lo mismo:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">v-if</span>=<span class="string">"ok"</span>&gt;</span>Sí<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>También es posible agregar un “bloque <em>else</em>“ con <code>v-else</code>:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">v-if</span>=<span class="string">"ok"</span>&gt;</span>Sí<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">v-else</span>&gt;</span>No<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Grupos-Condicionales-con-v-if-en-lt-template-gt"><a href="#Grupos-Condicionales-con-v-if-en-lt-template-gt" class="headerlink" title="Grupos Condicionales con v-if en <template>" data-scroll="">Grupos Condicionales con <code>v-if</code> en <code>&lt;template&gt;</code></a></h3><p>Debido a que <code>v-if</code> es una directiva, debe adjuntarse a un solo elemento. Pero, ¿y si queremos cambiar más de un elemento? En este caso, podemos usar <code>v-if</code> en un elemento<code>&lt;template&gt;</code>, que sirve como un envoltorio invisible. El resultado final procesado no incluirá el elemento <code>&lt;template&gt;</code>.</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-if</span>=<span class="string">"ok"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Título<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Párrafo 1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Párrafo 2<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="v-else"><a href="#v-else" class="headerlink" title="v-else" data-scroll=""><code>v-else</code></a></h3><p>Puede usar la directiva <code>v-else</code> para indicar un “bloque <em>else</em>“ para <code>v-if</code>:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-if</span>=<span class="string">"Math.random() &gt; 0.5"</span>&gt;</span></span><br><span class="line">  Ahora me ves</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-else</span>&gt;</span></span><br><span class="line">  Ahora no</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Un elemento <code>v-else</code> debe seguir inmediatamente a un elemento <code>v-if</code> o <code>v-else-if</code>, de lo contrario, no será reconocido.</p>
+<h3 id="v-else-if"><a href="#v-else-if" class="headerlink" title="v-else-if" data-scroll=""><code>v-else-if</code></a></h3><blockquote>
+<p>Nuevo en 2.1.0+</p>
 </blockquote>
-<p>Cuando usa el atributo <code>class</code> en un componente personalizado, estas clases se agregarán al elemento raíz del componente. Las clases existentes en este elemento no serán sobreescritas.</p>
-<p>Por ejemplo, si declara este componente:</p>
-<pre>Vue.component(<span class="string">'my-component'</span>, {
-  template: <span class="string">'&lt;p class="foo bar"&gt;Hi&lt;/p&gt;'</span>
-})</span></pre>
-<p>Y agrega algunas clases al usarlo:</p>
-<pre><span class="tag">&lt;<span class="name">my-component</span> <span class="attr">class</span>=<span class="string">"baz boo"</span>&gt;</span><span class="tag">&lt;/<span class="name">my-component</span>&gt;</span></span></pre>
-<p>El HTML renderizado será:</p>
-<pre><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"foo bar baz boo"</span>&gt;</span>Hi<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
-<p>Lo mismo aplica para el enlace de clases:</p>
-<pre><span class="tag">&lt;<span class="name">my-component</span> <span class="attr">v-bind:class</span>=<span class="string">"{ active: isActive }"</span>&gt;</span><span class="tag">&lt;/<span class="name">my-component</span>&gt;</span></span></pre>
-<p>Cuando <code>isActive</code> es verdadero, el HTML renderizado será:</p>
-<pre><span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"foo bar active"</span>&gt;</span>Hi<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre>
-<h2>Enlace de estilos en línea</h2><h3>Sintaxis de Objeto</h3><p>La sintaxis de objeto para <code>v-bind:style</code> es muy sencilla - es similar a CSS, excepto que es un objeto JavaScript. Puede usar tanto camelCase como kebab-case (use comillas con kebab-case) para los nombres de propiedades CSS:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"{ color: activeColor, fontSize: fontSize + 'px' }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>data: {
-  activeColor: <span class="string">'red'</span>,
-  fontSize: <span class="number">30</span>
-}</span></pre>
-<p>A menudo es una buena idea enlazar directamente un objeto de estilo para que la plantilla sea más limpia:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"styleObject"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<pre>data: {
-  styleObject: {
-    color: <span class="string">'red'</span>,
-    fontSize: <span class="string">'13px'</span>
-  }
-}</span></pre>
-<p>Nuevamente, la sintaxis de objeto es a menudo usada en conjunción con propiedades computadas que retornan objetos.</p>
-<h3>Sintaxis de Array</h3><p>La sintaxis de array <code>v-bind:style</code> permite aplicar múltiples objetos de estilo al mismo elemento:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"[baseStyles, overridingStyles]"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<h3>Auto-prefijado</h3><p>Cuando utilice una propiedad CSS que requiera <span class="link">prefijos de proveedores</span> en <code>v-bind:style</code>, como por ejemplo <code>transform</code>, Vue detectará automaticamente y agregará los prefijos correspondientes a los estilos aplicados.</p>
-<h3>Valores múltiples</h3><blockquote>
-<p>2.3.0+</p>
-</blockquote>
-<p>Desde la versión 2.3.0+ usted puede proveer un array de valores múltiples (de prefijos) a una propiedad de estilo, por ejemplo:</p>
-<pre><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-bind:style</span>=<span class="string">"{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre>
-<p>Esto solo renderizará el ultimo valor en el array que el navegador soporte. En este ejemplo, se renderizará <code>display: flex</code> para los navegadores que soportan la versión sin prefijo de flexbox.</p>
+<p>El <code>v-else-if</code>, como su nombre lo indica, sirve como “bloque <em>else if</em>“ para <code>v-if</code>. También puede ser encadenado varias veces:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-if</span>=<span class="string">"type === 'A'"</span>&gt;</span></span><br><span class="line">  A</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-else-if</span>=<span class="string">"type === 'B'"</span>&gt;</span></span><br><span class="line">  B</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-else-if</span>=<span class="string">"type === 'C'"</span>&gt;</span></span><br><span class="line">  C</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">v-else</span>&gt;</span></span><br><span class="line">  Si no es A, B o C</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Similar a <code>v-else</code>, un elemento<code>v-else-if</code> debe seguir inmediatamente a un elemento <code>v-if</code> o <code>v-else-if</code>.</p>
+<h3 id="Controlando-Elementos-Reutilizables-con-key"><a href="#Controlando-Elementos-Reutilizables-con-key" class="headerlink" title="Controlando Elementos Reutilizables con key" data-scroll="">Controlando Elementos Reutilizables con <code>key</code></a></h3><p>Vue intenta representar los elementos de la manera más eficiente posible, a menudo reutilizándolos en lugar de renderizarlos desde cero. Más allá de ayudar a hacer Vue muy rápido, esto puede tener algunas ventajas útiles. Por ejemplo, si permite a los usuarios alternar entre varios tipos de inicio de sesión:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-if</span>=<span class="string">"loginType === 'username'"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>Nombre de Usuario<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">placeholder</span>=<span class="string">"Ingrese su nombre de usuario"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-else</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>Email<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">placeholder</span>=<span class="string">"Ingrese su email"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Luego, cambiando el <code>loginType</code> en el código anterior no borrará lo que el usuario ya ha ingresado. Dado que ambos <em>templates</em> utilizan los mismos elementos, el <code>&lt;input&gt;</code> no se reemplaza, solo su <code>placeholder</code>.</p>
+<p>Sin embargo, esto no siempre es deseable, por lo que Vue le ofrece una manera de decir: “Estos dos elementos están completamente separados, no los reutilice”. Agregue un atributo <code>key</code> con valores únicos:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-if</span>=<span class="string">"loginType === 'username'"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>Nombre de Usuario<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">placeholder</span>=<span class="string">"Ingrese su nombre de usuario"</span> <span class="attr">key</span>=<span class="string">"username-input"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">template</span> <span class="attr">v-else</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span>Email<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">placeholder</span>=<span class="string">"Ingrese su nombre de usuario"</span> <span class="attr">key</span>=<span class="string">"email-input"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Ahora estas entradas se procesarán desde cero cada vez que presione alternar. Ver por ti mismo:</p>
+<p>Observe que los elementos <code>&lt;label&gt;</code> son todavía reutilizables, porque no tienen atributos <code>key</code>.</p>
+<h2 id="v-show"><a href="#v-show" class="headerlink" title="v-show" data-scroll=""><code>v-show</code></a></h2><p>Otra opción para mostrar un elemento condicionalmente es la directiva <code>v-show</code>. La utlización es basicamente la mismo:</p>
+<figure class="highlight html"><table><tbody><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">v-show</span>=<span class="string">"ok"</span>&gt;</span>Hola!<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>La diferencia es que un elemento con <code>v-show</code> siempre se renderizará y permanecerá en el DOM; <code>v-show</code> simplemente alterna la propiedad CSS <code>display</code> del elemento.</p>
+<p class="tip">Observe que el uso de <code>v-show</code> no es compatible con elementos <code>&lt;template&gt;</code>, ni tampoco funciona con <code>v-else</code>.</p>
+<h2 id="v-if-vs-v-show"><a href="#v-if-vs-v-show" class="headerlink" title="v-if vs v-show" data-scroll=""><code>v-if</code> vs <code>v-show</code></a></h2><p><code>v-if</code> es una renderización condicional “real” ya que garantiza que los eventos y componentes secundarios dentro del bloque condicional sean debidamente destruidos y recreados durante la alternancia.</p>
+<p><code>v-if</code> también es <strong>lazy</strong>: si la condición es falsa en la representación inicial, no se hará nada. El bloque condicional no se procesará hasta que la condición se convierta en true por primera vez.</p>
+<p>En comparación, <code>v-show</code> es mucho más simple: el elemento siempre se representa independientemente de la condición inicial, con alternancia basada en CSS.</p>
+<p>En general, <code>v-if</code> tiene costos de alternancia más altos, mientras que<code>v-show</code> tiene costos de renderización iniciales más altos. Por lo tanto, prefiera <code>v-show</code> si necesita cambiar algo muy a menudo, y prefiera<code>v-if</code> si es poco probable que la condición cambie en el tiempo de ejecución.</p>
+<h2 id="v-if-con-v-for"><a href="#v-if-con-v-for" class="headerlink" title="v-if con v-for" data-scroll=""><code>v-if</code> con <code>v-for</code></a></h2><p class="tip">Usando <code>v-if</code> y <code>v-for</code> juntos <strong>no es recomendado</strong>. Vea la <a href="/v2/style-guide/#Avoid-v-if-with-v-for-essential">guía de estilo</a> para mayor información.</p>
+<p>Cuando es utilizado junto con <code>v-for</code>, este tiene una prioridad más alta que <code>v-if</code>. Consulte la <a href="../guide/list.html#V-for-and-v-if"> guía de renderización de listas </a> para obtener más información.</p>
