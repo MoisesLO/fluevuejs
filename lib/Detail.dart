@@ -21,12 +21,19 @@ class _DetailState extends State<Detail> {
         children: [Padding(
           padding: EdgeInsets.all(10),
           child: HtmlWidget('${widget.contenido}',customStylesBuilder: (element) {
-            if (element.classes.contains('hljs-name')) {
-              return {'color': '#2973b7'};
-            }
             if (element.classes.contains('hljs-string')) {
               return {'color': '#42b983'};
             }
+            if (element.classes.contains('hljs-name')) {
+              return {'color': '#2973b7'};
+            }
+            if (element.classes.contains('hljs-tag')) {
+              return {'color': '#2973b7'};
+            }
+            if (element.classes.contains('hljs-comment')) {
+              return {'color': '#b3b3b3'};
+            }
+
             return null;
           },),
         )],
