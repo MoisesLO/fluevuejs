@@ -20,7 +20,15 @@ class _DetailState extends State<Detail> {
       body: ListView(
         children: [Padding(
           padding: EdgeInsets.all(10),
-          child: HtmlWidget('${widget.contenido}'),
+          child: HtmlWidget('${widget.contenido}',customStylesBuilder: (element) {
+            if (element.classes.contains('hljs-name')) {
+              return {'color': '#2973b7'};
+            }
+            if (element.classes.contains('hljs-string')) {
+              return {'color': '#42b983'};
+            }
+            return null;
+          },),
         )],
       )
     );

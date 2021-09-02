@@ -1,147 +1,121 @@
-<h1>La instancia Vue</h1>
-<h2>Creando una instancia de Vue</h2>
-<p>Cada aplicación de Vue se comienza creando una nueva <strong>Instancia de Vue</strong> con la
-    función <code>Vue</code>:</p>
-<pre><code><span>var</span> vm = <span>new</span> Vue({
-  <span>// options</span>
-})</code></pre>
+<h1>Sintaxis de Template</h1>
+<p>Vue.js utiliza una sintaxis de template basada en HTML que le permite vincular de forma
+    declarativa el DOM renderizado a los datos de la instancia de Vue subyacente. Todas las
+    templates de Vue.js son HTML válidas que pueden analizarse mediante navegadores compatibles con
+    especificaciones y analizadores de HTML.</p>
+<p>Bajo el capó, Vue compila las templates en funciones de renderizado del DOM virtual. Combinado
+    con el sistema de reactividad, Vue puede averiguar de manera inteligente el número mínimo de
+    componentes para volver a renderizar y aplicar la cantidad mínima de manipulacion del DOM cuando
+    el estado de la aplicacion cambia.</p>
+<p>Si está familiarizado con los conceptos de DOM virtual y prefiere la potencia bruta de
+    JavaScript, también puede escribir directamente funciones de procesamiento en lugar de
+    plantillas, con soporte opcional de JSX.</p>
+<h2>Interpolaciones</h2><h3>Texto</h3><p>La forma más básica de enlace de datos es la interpolación
+    de texto usando la sintaxis de <em>mustaches</em> (llaves doble):</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Message: {{ msg }}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></code></pre>
+<p>La etiqueta del <em>mustache</em> se reemplazará con el valor de la propiedad <code>msg</code> en
+    el objeto de datos correspondiente. También se actualizará cada vez que cambie la propiedad
+    <code>msg</code> del objeto de datos.</p>
+<p>También puede realizar interpolaciones únicas que no se actualizan en el cambio de datos usando
+    la directiva v-once, pero tenga en cuenta que esto también afectará a cualquier otro enlace en
+    el mismo nodo:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">v-once</span>&gt;</span>This will never change: {{ msg }}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></code></pre>
+<h3>HTML Puro</h3><p>Los <em>mustaches</em> (llaves doble) interpretan los datos como texto plano,
+    no HTML. Para generar HTML real, deberá utilizar la directiva <code>v-html</code>:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Using mustaches: {{ rawHtml }}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Using v-html directive: <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">v-html</span>=<span class="hljs-string">"rawHtml"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></pre>
+<p>El contenido del <code>span</code> se reemplazará con el valor de la propiedad
+    <code>rawHtml</code>, interpretado como HTML simple: se ignoran los enlaces de datos. Tenga en
+    cuenta que no puede utilizar <code>v-html</code> para componer plantillas parciales, porque Vue
+    no es un motor de plantillas basado en cadenas. En cambio, se prefieren los componentes como la
+    unidad fundamental para la reutilización y la composición de la interfaz de usuario.</p>
+<p>La ejecución dinámica de HTML arbitrario en su sitio web puede ser muy peligrosa porque puede
+    conducir fácilmente a vulnerabilidades de XSS. Utilice solo la interpolación HTML en contenido
+    de confianza y <strong>nunca</strong> en contenido proporcionado por usuario.</p>
 
-<p>Aunque no estrictamente asociado con el patrón MVVM, el diseño de Vue fue en parte inspirado por
-    él.<br>Como
-    una convención, solemos usar la variable <code>vm</code> (abreviación de ViewModel) para
-    hacer referencia a nuestra instancia de Vue.</p>
-<p>Cuando usted crea una instancia de Vue, le pasa un <strong>objeto options</strong>. La mayor
-    parte de esta guía describe cómo usted puede usar estas opciones para crear el
-    comportamiento deseado.<br>Como referencia, usted puede visitar también la lista completa de
-    opciones en la documentación de la API.</p>
-<p>Una aplicación Vue está conformada por una <strong>instancia Vue raíz</strong> creada con
-    <code>new Vue</code>, opcionalmente organizada dentro de un árbol de componentes reusables
-    anidados. Por ejemplo, el árbol de una aplicación TO-DO podría verse así:</p>
-<pre><code>Root Instance
-└─ TodoList
-   ├─ TodoItem
-   │  ├─ TodoButtonDelete
-   │  └─ TodoButtonEdit
-   └─ TodoListFooter
-      ├─ TodosButtonClear
-      └─ TodoListStatistics</code></pre>
+<h3>Atributos</h3><p>Los <em>mustaches</em> (llaves doble) no se pueden utilizar dentro de los
+    atributos HTML. En su lugar, use una directiva v-bind:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-bind:id</span>=<span class="hljs-string">"dynamicId"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></code></pre>
+<p>En el caso de los atributos booleanos, donde su mera existencia implica <code>true</code>, <code>v-bind</code>
+    funciona de manera un poco diferente. En este ejemplo:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">v-bind:disabled</span>=<span class="hljs-string">"isButtonDisabled"</span>&gt;</span>Button<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></code></pre>
+<p>Si <code>isButtonDisabled</code> tiene el valor de <code>null</code>, <code>undefined</code> o
+    <code>false</code>, el atributo <code>disabled</code> ni siquiera se incluirá en el elemento
+    <code>&lt;button&gt;</code> representado.</p>
+<h3>Usando Expresiones JavaScript</h3><p>Hasta ahora solo hemos estado vinculando a simples claves
+    de propiedad en nuestras template. Pero Vue.js realmente admite el poder completo de las
+    expresiones de JavaScript dentro de todos los enlaces de datos:</p>
+<pre><code class="hljs html">{{ number + 1 }}
 
-<p>Hablaremos sobre el sistema de componentes en detalle después.
-    Por ahora, solo es necesario saber que todos los componentes de Vue son también instancias
-    de Vue, por lo tanto aceptan el mismo objeto options (excepto para unas pocas específicas
-    opciones de raíz).</p>
-<h2>Datos y Métodos</h2>
-<p>Cuando una instancia Vue es creada, agrega todas las propiedades encontradas en su objeto
-    <code>data</code> al <strong>sistema de reactividad</strong> de Vue. Cuando los valores de
-    estas propiedades cambian, la vista “reaccionará”, actualizándose para coincidir con los
-    nuevos valores.</p>
-<pre><code><span>// Our data object</span>
-<span>var</span> data = { <span>a</span>: <span>1</span> }
+{{ ok ? 'YES' : 'NO' }}
 
-<span>// The object is added to a Vue instance</span>
-<span>var</span> vm = <span>new</span> Vue({
-  <span>data</span>: data
-})
+{{ message.split('').reverse().join('') }}
 
-<span>// Getting the property on the instance</span>
-<span>// returns the one from the original data</span>
-vm.a == data.a <span>// =&gt; true</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-bind:id</span>=<span class="hljs-string">"'list-' + id"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></code></pre>
+<p>Estas expresiones se evaluarán como JavaScript en el ámbito de datos de la instancia de Vue del
+    propietario. Una restricción es que cada enlace solo puede contener <strong>una
+        expresión</strong>, por lo que lo siguiente <strong>NO</strong> funcionará:</p>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- this is a statement, not an expression: --&gt;</span>
+{{ var a = 1 }}
 
-<span>// Setting the property on the instance</span>
-<span>// also affects the original data</span>
-vm.a = <span>2</span>
-data.a <span>// =&gt; 2</span>
+<span class="hljs-comment">&lt;!-- flow control won't work either, use ternary expressions --&gt;</span>
+{{ if (ok) { return message } }}</code></pre>
+<p>Las expresiones de template están en un espacio aislado y solo tienen acceso a una lista blanca
+    de elementos globales como <code>Matemáticas</code> y <code>Fecha</code>. No debe intentar
+    acceder a globales definidos por el usuario en expresiones de template.</p>
 
-<span>// ... and vice-versa</span>
-data.a = <span>3</span>
-vm.a <span>// =&gt; 3</span></code></pre>
+<h2>Directivas</h2><p>Las directivas son atributos especiales con el prefijo <code>v-</code>. Se
+    espera que los valores de atributo de la directiva sean <strong>una única expresión de
+        JavaScript</strong> (con la excepción de <code>v-for</code>, que se tratará más adelante).
+    El trabajo de una directiva es aplicar reactivamente efectos secundarios al DOM cuando cambia el
+    valor de su expresión. Repasemos el ejemplo que vimos en la introducción:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">"seen"</span>&gt;</span>Now you see me<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></code></pre>
+<p>Aquí, la directiva <code>v-if</code> insertaría/eliminaría el elemento </p><p> basándose en la
+    veracidad del valor de la expresión <code>seen</code>.</p>
+<h3>Argumentos</h3><p>Algunas directivas pueden tomar un “argumento”, denotado por dos puntos
+    después del nombre de la directiva. Por ejemplo, la directiva <code>v-bind</code> se usa para
+    actualizar de forma reactiva un atributo HTML:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-bind:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
+<p>Aquí href es el argumento, que le dice a la directiva <code>v-bind</code> que vincule el atributo
+    <code>href</code> del elemento al valor de la expresión <code>url</code>.</p>
+<p>Otro ejemplo es la directiva <code>v-on</code>, que escucha los eventos DOM:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-on:click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
+<p>Aquí el argumento es el nombre del evento a escuchar. Hablaremos sobre el manejo de eventos con
+    más detalle también.</p>
+<h3>Modificadores</h3><p>Los modificadores son sufijos especiales indicados por un punto, que
+    indican que una directiva debe estar vinculada de alguna manera especial. Por ejemplo, el
+    modificador <code>.prevent</code> le dice a la directiva <code>v-on</code> que llame a <code>event.preventDefault()</code>
+    en el evento activado:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">v-on:submit.prevent</span>=<span class="hljs-string">"onSubmit"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></code></pre>
+<p>Más adelante veremos otros ejemplos de modificadores, para <code>v-on</code> y para
+    <code>v-model</code>, cuando exploremos esas características.</p>
+<h2>Modo abreviado</h2><p>El prefijo <code>v-</code> sirve como una señal visual para identificar
+    atributos específicos de Vue en sus templates. Esto es útil cuando está utilizando Vue.js para
+    aplicar un comportamiento dinámico a algún marcado existente, pero puede sentirse detallado para
+    algunas directivas de uso frecuente. Al mismo tiempo, la necesidad del prefijo <code>v-</code>
+    es menos importante cuando se está construyendo un SPA donde Vue.js administra cada template.
+    Por lo tanto, Vue.js proporciona abreviaturas especiales para dos de las directivas más
+    utilizadas, <code>v-bind</code> y <code>v-on</code>:</p>
+<h3><code>v-bind</code> Abreviado</h3>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- full syntax --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-bind:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
 
-<p>Cuando estos datos cambian, la vista volverá a renderizarse. Es preciso señalar que las
-    propiedades en <code>data</code> solo son <strong>reactivas</strong> si ya existían cuando
-    se creó la instancia. Eso significa que si usted agrega una nueva propiedad, como:</p>
-<pre><code>vm.b = <span>'hi'</span></code></pre>
-<p>Entonces los cambios de <code>b</code> no producirán ninguna actualización en la vista. Si
-    sabe que necesitará una propiedad más adelante, pero comienza vacía o inexistente,
-    necesitará setear un valor inicial. Por ejemplo:</p>
-<pre><code>data: {
-  <span>newTodoText</span>: <span>''</span>,
-  <span>visitCount</span>: <span>0</span>,
-  <span>hideCompletedTodos</span>: <span>false</span>,
-  <span>todos</span>: [],
-  <span>error</span>: <span>null</span>
-}</code></pre>
-<p>La unica excepción a esto es el uso de <code>Object.freeze()</code>, lo que evita que se
-    modifiquen las propiedades existentes, lo que también significa que el sistema de
-    reactividad no puede rastrear cambios.</p>
-<pre><code><span>var</span> obj = {
-  <span>foo</span>: <span>'bar'</span>
-}
+<span class="hljs-comment">&lt;!-- shorthand --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">:href</span>=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
 
-<span>Object</span>.freeze(obj)
+<span class="hljs-comment">&lt;!-- shorthand with dynamic argument (2.6.0+) --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">:</span>[<span class="hljs-attr">key</span>]=<span class="hljs-string">"url"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
+<h3><code>v-on</code> Abreviado</h3>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- full syntax --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">v-on:click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
 
-<span>new</span> Vue({
-  <span>el</span>: <span>'#app'</span>,
-  <span>data</span>: obj
-})</code></pre>
-<br>
-<pre><code><span>&lt;<span>div</span> <span>id</span>=<span>"app"</span>&gt;</span>
-  <span>&lt;<span>p</span>&gt;</span>{{ foo }}<span>&lt;/<span>p</span>&gt;</span>
-  <span>&lt;!-- this will no longer update `foo`! --&gt;</span>
-  <span>&lt;<span>button</span> <span>v-on:click</span>=<span>"foo = 'baz'"</span>&gt;</span>Change it<span>&lt;/<span>button</span>&gt;</span>
-<span>&lt;/<span>div</span>&gt;</span></code></pre>
+<span class="hljs-comment">&lt;!-- shorthand --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
 
-<p>Además de las propiedades de datos, las instancias de Vue exponen una serie de métodos y
-    propiedades de instancia útiles. Estos tienen el prefijo <code>$</code> para diferenciarlos
-    de las propiedades definidas por el usuario. Por ejemplo:</p>
-<pre><code><span>var</span> data = { <span>a</span>: <span>1</span> }
-<span>var</span> vm = <span>new</span> Vue({
-  <span>el</span>: <span>'#example'</span>,
-  <span>data</span>: data
-})
-
-vm.$data === data <span>// =&gt; true</span>
-vm.$el === <span>document</span>.getElementById(<span>'example'</span>) <span>// =&gt; true</span>
-
-<span>// $watch is an instance method</span>
-vm.$watch(<span>'a'</span>, <span><span>function</span> (<span>newValue, oldValue</span>) </span>{
-  <span>// This callback will be called when `vm.a` changes</span>
-})</code></pre>
-<p>En el futuro, puede consultar la documentación de la
-    API para una lista completa de propiedades y métodos de instancia.</p>
-<h2>Hooks del Ciclo de vida
-    de la Instancia</h2>
-<p>Cada instancia de Vue pasa a través de una serie de pasos de inicialización cuando es creada
-    - por ejemplo, se necesita configurar la observación de datos, compilar la plantilla, montar
-    la instancia en el DOM y actualizar el DOM cuando cambian los datos. En el camino, también
-    se ejecutan funciones llamadas <strong>hooks del ciclo de vida</strong>, lo que brinda a los
-    usuarios la oportunidad de agregar su propio código en etapas específicas.</p>
-<p>Por ejemplo, el hook <code>created</code> puede ser utilizado
-    para ejecutar código después que una instancia es creada:</p>
-<pre><code><span>new</span> Vue({
-  <span>data</span>: {
-    <span>a</span>: <span>1</span>
-  },
-  <span>created</span>: <span><span>function</span> (<span></span>) </span>{
-    <span>// `this` points to the vm instance</span>
-    <span>console</span>.log(<span>'a is: '</span> + <span>this</span>.a)
-  }
-})
-<span>// =&gt; "a is: 1"</span></code></pre>
-<p>También hay otros hooks que se llamarán en diferentes etapas del ciclo de vida de la
-    instancia, como <code>mounted</code>, <code>updated</code>, y <code>destroyed</code>. Todos los
-    hooks del ciclo de
-    vida se llaman en el contexto <code>this</code> apuntando a la instancia de Vue que lo
-    invoca.</p>
-<p>No usar arrow functions en una propiedad de opciones o
-    respuesta, como <code>created: () =&gt; console.log(this.a)</code> or <code>vm.$watch('a',
-        newValue =&gt; this.myMethod())</code>. Dado que las arrow functions están vinculadas al
-    contexto padre, <code>this</code> no será la instancia de Vue como lo esperaría, lo que
-    suele producir errores, como ‘Uncaught TypeError: Cannot read property of
-    undefined<code>o</code>Uncaught TypeError: this.myMethod is not a function`.</p>
-
-<h2>Diagrama
-    del Ciclo de vida</h2>
-<p>La imagen de abajo es un diagrama para el ciclo de vida de una instancia. No es necesario que
-    entienda como funciona todo en este momento, pero a medida que aprenda y construya más, será
-    una referencia útil.</p>
-<img src="asset://assets/img/lifecycle.png" alt="">
+<span class="hljs-comment">&lt;!-- shorthand with dynamic argument (2.6.0+) --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">a</span> @[<span class="hljs-attr">event</span>]=<span class="hljs-string">"doSomething"</span>&gt;</span> ... <span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></code></pre>
+<p>Pueden parecer un poco diferentes del HTML normal, pero <code>:</code> y <code>@</code> son
+    caracteres válidos para los nombres de atributos y todos los navegadores compatibles con Vue.js
+    pueden analizarlo correctamente. Además, no aparecen en el marcado final renderizado. La
+    sintaxis abreviada es totalmente opcional, pero es probable que la aprecie cuando sepa más sobre
+    su uso más adelante.</p>
