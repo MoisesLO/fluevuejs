@@ -29,7 +29,7 @@ class _DetailState extends State<Detail> {
 
             // Azul codigo
             if (element.classes.contains('tag') || element.classes.contains('name')) {
-              return {'color': '#2973b7'};
+              return {'color': '#418fd8'};
             }
 
             // Verde Codigo
@@ -39,7 +39,7 @@ class _DetailState extends State<Detail> {
 
             // Codigo entre el texto anaranjado
             if (element.classes.contains('naranja')) {
-              return {'color': '#e96900', 'font-weight': 'bold'};
+              return {'color': '®', 'font-weight': 'bold'};
             }
 
             // comentario en codigo
@@ -49,7 +49,7 @@ class _DetailState extends State<Detail> {
 
             // variable en codigo
             if (element.classes.contains('keyword')) {
-              return {'color': '#e96900'};
+              return {'color': '#e96900', 'font-weight': 'bold'};
             }
 
             // key de codigo de funcion built_in
@@ -64,7 +64,11 @@ class _DetailState extends State<Detail> {
 
             // Code color naranja
             if (element.localName == 'code') {
-              return {'color': '#e96900'};
+              return {'color': '#e96900', 'font-weight': 'bold'};
+            }
+
+            if (element.localName == 'pre') {
+              return {'font-weight': 'bold'};
             }
 
             return null;
