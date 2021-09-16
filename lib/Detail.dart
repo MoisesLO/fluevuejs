@@ -49,7 +49,7 @@ class _DetailState extends State<Detail> {
 
             // variable en codigo
             if (element.classes.contains('keyword')) {
-              return {'color': '#e96900', 'font-weight': 'bold'};
+              return {'color': '#e96900'};
             }
 
             // key de codigo de funcion built_in
@@ -64,11 +64,11 @@ class _DetailState extends State<Detail> {
 
             // Code color naranja
             if (element.localName == 'code') {
-              return {'color': '#e96900', 'font-weight': 'bold'};
+              return {'color': '#e96900'};
             }
 
             if (element.localName == 'pre') {
-              return {'font-weight': 'bold'};
+              return {'font-weight': '600'};
             }
 
             return null;

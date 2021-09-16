@@ -9,7 +9,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
   runApp(MaterialApp(
-    theme: ThemeData(primaryColor: Colors.green),
+    theme: ThemeData.light(),
     darkTheme: ThemeData.dark(),
     debugShowCheckedModeBanner: false,
     title: 'Vue js',
