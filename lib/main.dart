@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('VueJs Documentacion'),
+        title: Text('Vue Js Español Documentacion'),
         actions: [
           IconButton(
               icon: Icon(Icons.search),
